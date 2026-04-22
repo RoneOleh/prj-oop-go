@@ -7,18 +7,20 @@ import (
 	"github.com/upper/db/v4"
 )
 
+const OrganizationTableName = "organizations"
+
 type organization struct {
 	Id          uint64     `db:"id,omitempty"`
-	UserId      uint64     `db:""`
-	Name        string     `db:""`
-	Description string     `db:""`
-	City        string     `db:""`
-	Address     string     `db:""`
-	Lat         float64    `db:""`
-	LON         float64    `db:""`
-	CreatedDate time.Time  `db:""`
-	UpdatedDate time.Time  `db:""`
-	DeletedDate *time.Time `db:""`
+	UserId      uint64     `db:"user_id"`
+	Name        string     `db:"name"`
+	Description *string    `db:"description"`
+	City        string     `db:"city"`
+	Address     string     `db:"address"`
+	Lat         float64    `db:"lat"`
+	Lon         float64    `db:"lon"`
+	CreatedDate time.Time  `db:"created_date"`
+	UpdatedDate time.Time  `db:"updated_date"`
+	DeletedDate *time.Time `db:"deleted_date"`
 }
 
 type organizationRepository struct {
@@ -62,7 +64,7 @@ func (r organizationRepository) mapDomainToModel(o domain.Organization) organiza
 		City:        o.City,
 		Address:     o.Address,
 		Lat:         o.Lat,
-		LON:         o.LON,
+		Lon:         o.Lon,
 		CreatedDate: o.CreatedDate,
 		UpdatedDate: o.UpdatedDate,
 		DeletedDate: o.DeletedDate,
@@ -78,7 +80,7 @@ func (r organizationRepository) mapModelToDomain(o organization) domain.Organiza
 		City:        o.City,
 		Address:     o.Address,
 		Lat:         o.Lat,
-		LON:         o.LON,
+		Lon:         o.Lon,
 		CreatedDate: o.CreatedDate,
 		UpdatedDate: o.UpdatedDate,
 		DeletedDate: o.DeletedDate,
