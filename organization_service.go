@@ -1,4 +1,4 @@
-package app
+gitpackage app
 
 import (
 	"log"
