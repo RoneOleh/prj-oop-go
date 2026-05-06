@@ -30,6 +30,15 @@ func (s organizationService) Save(o domain.Organization) (domain.Organization, e
 
 	return org, nil
 }
+func (s organizationService) FindList(uId domain.Organization) (domain.Organization, error) {
+	org, err := s.orgRepo.Findlist(o)
+	if err != nil {
+		log.Printf("organizationService.Save(s.orgRepo.Save): %s", err)
+		return nil,err
+
+	}
+	return org, nil
+}
 
 func (s organizationService) FindList(uId uint64) ([]domain.Organization, error) {
 	orgs, err := s.orgRepo.FindList(uId)

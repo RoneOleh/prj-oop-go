@@ -50,6 +50,7 @@ func Router(cont container.Container) http.Handler {
 				apiRouter.Use(cont.AuthMw)
 
 				UserRouter(apiRouter, cont.UserController)
+				OrganizationRouter(apiRouter, cont.OrganizationController)
 				apiRouter.Handle("/*", NotFoundJSON())
 			})
 		})
@@ -101,6 +102,13 @@ func UserRouter(r chi.Router, uc controllers.UserController) {
 	})
 }
 
+func OrganizationRouter(r chi.Router, oc controllers.OrganizationController) {
+	r.Route("/organizations", func(apiRouter chi.Router) {
+		apiRouter.Post("/", oc.Save())
+
+	})
+}
+
 func NotFoundJSON() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -121,4 +129,10 @@ func PingHandler() http.HandlerFunc {
 			fmt.Printf("writing response: %s", err)
 		}
 	}
+}
+func OrganizationRouter(r chi.Router, oc controllers.OrganizationController) {
+	r.Route("/organizations", func(apiRouter chi.Router) {
+		apiRouter.Get("/", oc.Save())
+        apiRouter.Get("/", oc.FindList())
+	})
 }
