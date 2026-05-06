@@ -42,3 +42,20 @@ func (c OrganizationController) Save() http.HandlerFunc {
         Success(w,orgDto)
 	}
 }
+func (c OrganizationController) Save() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request)
+		user := r.Context().Value(UserKey).(domain.User)
+
+		
+		orgs ,err = c.orgService.Findlist(org)
+		if err !=nil{
+			log.Printf("OrganizationController.Save(c.orgService.Save): %s",err)
+			InternalServerError(w,err)
+			return 
+		}
+		orgDto :=resources.OrganizationDto{}
+        orgDto = orgDto.DomainToDto(org)
+        Success(w,orgDto)
+		Success(w,resources.OrganizationDto)
+	}
+}

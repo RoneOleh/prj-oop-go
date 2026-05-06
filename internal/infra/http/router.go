@@ -130,3 +130,9 @@ func PingHandler() http.HandlerFunc {
 		}
 	}
 }
+func OrganizationRouter(r chi.Router, oc controllers.OrganizationController) {
+	r.Route("/organizations", func(apiRouter chi.Router) {
+		apiRouter.Get("/", oc.Save())
+        apiRouter.Get("/", oc.FindList())
+	})
+}

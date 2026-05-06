@@ -55,6 +55,11 @@ func (r organizationRepository) Save(o domain.Organization) (domain.Organization
 	return o, nil
 }
 
+func ( r organizationRepository)FindList( uId uint64)([]domain.Organization,error){
+ var orgs []organization
+err :=r.coll.Find(db.Cond({"user_id":uId})
+}
+
 func (r organizationRepository) mapDomainToModel(o domain.Organization) organization {
 	return organization{
 		Id:          o.Id,
@@ -85,4 +90,16 @@ func (r organizationRepository) mapModelToDomain(o organization) domain.Organiza
 		UpdatedDate: o.UpdatedDate,
 		DeletedDate: o.DeletedDate,
 	}
+}
+
+
+func (r OorganizationRepository)mapModelToDomain {orgs[ ]domain.Organization{
+	organizatioorganizations :=make([]domain.Organizatnios,len(orgs))
+	for i,_  := range orgs {
+    organizatios[i] = r.mapModelin
+
+	}
+	return organizations
+}
+	
 }

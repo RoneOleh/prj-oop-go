@@ -25,3 +25,12 @@ func (d OrganizationDto) DomainToDto(o domain.Organization) OrganizationDto {
 		Lon:         o.Lon,
 	}
 }
+
+func (d OrganizationDto) DomainToDtoCollectiion(orgs [] domain.Organization) []OrganizationDto{
+	orgsDto :=make([]OrganizationDto,len(orgs))
+	for i= range orgs{
+		orgsDto[i] = d.DomainToDto(orgs[i])
+	}
+	return orgsDto
+	
+}
