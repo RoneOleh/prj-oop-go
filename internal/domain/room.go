@@ -2,7 +2,7 @@ package domain
 
 import "time"
 
-type Organization struct {
+type Room struct {
 	Id          uint64
 	UserId      uint64
 	Name        string
@@ -11,7 +11,6 @@ type Organization struct {
 	Address     string
 	Lat         float64
 	Lon         float64
-	Rooms       []Room
 	CreatedDate time.Time
 	UpdatedDate time.Time
 	DeletedDate *time.Time
