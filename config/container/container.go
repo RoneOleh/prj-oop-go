@@ -43,11 +43,11 @@ func New(conf config.Configuration) Container {
 	sessionRepository := database.NewSessRepository(sess)
 	userRepository := database.NewUserRepository(sess)
 	organizationRepository := database.NewOrganizationRepository(sess)
-    roomRepository := database.NewRoomRepository(sess)
+	roomRepository := database.NewRoomRepository(sess)
 
 	userService := app.NewUserService(userRepository)
 	authService := app.NewAuthService(sessionRepository, userRepository, tknAuth, conf.JwtTTL)
-	organizationService := app.NewOrganizationService(organizationRepository,roomRepository)
+	organizationService := app.NewOrganizationService(organizationRepository, roomRepository)
 
 	authController := controllers.NewAuthController(authService, userService)
 	userController := controllers.NewUserController(userService, authService)

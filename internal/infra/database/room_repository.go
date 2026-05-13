@@ -20,7 +20,7 @@ type room struct {
 }
 
 type RoomsRepository interface {
-	FindByOrgId(oId uint64)
+	FindByOrgId(oId uint64) ([]domain.Room, error)
 }
 
 type roomRepository struct {
@@ -28,25 +28,31 @@ type roomRepository struct {
 	sess db.Session
 }
 
-func(r roomRepository)FindByOrgId(oId uint64)([]domain.Room){
+func NewRoomRepository(session db.Session) RoomRepository {
+       return roomRepository{
+		coll:session.Collection(RoomsTableName),
+		sess:session,
+	   }
+}
 
- var rooms []room
-	 err :=r.coll
-	 Find(db.Cond)
-	  "organization_id": oId,
-	  "deleted_date": nil,All(&rooms)	  
-    if err !=nil(
-		return nil,err
-	)
+
+func(r roomRepository)FindByOrgId(oId uint64)([]domain.Room,error){
+	var rooms []room
+
+	err := r.coll.
+		Find(db.Cond{
+			"organization_id": oId,
+			"deleted_date":    nil,
+		}).All(&rooms)
+
+	if err != nil {
+		return nil, err
+	}
+	rms :=r.mapModelToDomainCollection(rooms)
+	return rms,nil
 }
 
     
-
-
-
-
-	 
-
 func (r roomRepository) mapDomainToModel(rm domain.Room) room {
 	return room{
 		Id:          rm.Id,
@@ -71,10 +77,10 @@ func (r roomRepository) mapModelToDomain(rm room) domain.Room {
 	}
 }
 
-func (r roomRepository) mapModelToDomainCollection(orgs []room) []domain.Room {
+func (r roomRepository) mapModelToDomainCollection(rooms []room) []domain.Room {
 	rms:= make([]domain.Room, len(rooms))
 	for i := range rooms {
-		rms[i] = r.mapModelToDomain(orgs[i])
+		rms[i] = r.mapModelToDomain(rooms[i])
 	}
 	return rms
 }

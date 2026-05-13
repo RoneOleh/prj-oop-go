@@ -54,15 +54,16 @@ func (s organizationService) Find(id uint64) (interface{}, error) {
 		log.Printf("organizationService.Find(s.orgRepo.Find): %s", err)
 		return nil, err
 	}
-	org.Rooms,err = s.roomRepo.FindByOrgId(org.Id)
-	if err != nil(
+   org.Rooms,err = s.roomRepo.FindByOrgId(org.Id)
+	if err != nil{
 		log.Printf("organizationService.Find(s.roomRepo.FindByOrg): %s",err)
-	) nil,err
+	return nil,err
+	}
 
 	return org, nil
 }
 
-func (s organizationService) Update(o domain.Organization) (domain.Organization, eror) {
+func (s organizationService) Update(o domain.Organization) (domain.Organization, error) {
 	org, err := s.orgRepo.Update(o)
 	if err != nil {
 		log.Printf("organizationService.Update(s.orgRepo.Update): %s", err)
