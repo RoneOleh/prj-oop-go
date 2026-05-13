@@ -20,11 +20,32 @@ type room struct {
 }
 
 type RoomsRepository interface {
+	FindByOrgId(oId uint64)
 }
+
 type roomRepository struct {
 	coll db.Collection
 	sess db.Session
 }
+
+func(r roomRepository)FindByOrgId(oId uint64)([]domain.Room){
+
+ var rooms []room
+	 err :=r.coll
+	 Find(db.Cond)
+	  "organization_id": oId,
+	  "deleted_date": nil,All(&rooms)	  
+    if err !=nil(
+		return nil,err
+	)
+}
+
+    
+
+
+
+
+	 
 
 func (r roomRepository) mapDomainToModel(rm domain.Room) room {
 	return room{
@@ -48,4 +69,12 @@ func (r roomRepository) mapModelToDomain(rm room) domain.Room {
 		UpdatedDate: rm.UpdatedDate,
 		DeletedDate: rm.DeletedDate,
 	}
+}
+
+func (r roomRepository) mapModelToDomainCollection(orgs []room) []domain.Room {
+	rms:= make([]domain.Room, len(rooms))
+	for i := range rooms {
+		rms[i] = r.mapModelToDomain(orgs[i])
+	}
+	return rms
 }
