@@ -21,6 +21,9 @@ type room struct {
 
 type RoomsRepository interface {
 	FindByOrgId(oId uint64) ([]domain.Room, error)
+	Save(o domain.Room) (domain.Room, error)
+	Update(o domain.Room) (domain.Room, error)
+	Delete(id uint64) error
 }
 
 type roomRepository struct {
@@ -28,7 +31,7 @@ type roomRepository struct {
 	sess db.Session
 }
 
-func NewRoomRepository(session db.Session) RoomRepository {
+func NewRoomRepository(session db.Session) roomRepository {
        return roomRepository{
 		coll:session.Collection(RoomsTableName),
 		sess:session,
@@ -50,6 +53,34 @@ func(r roomRepository)FindByOrgId(oId uint64)([]domain.Room,error){
 	}
 	rms :=r.mapModelToDomainCollection(rooms)
 	return rms,nil
+}
+func (r roomRepository) Save(o domain.Room) (domain.Room, error) {
+	rm := r.mapDomainToModel(o)
+	now := time.Now()
+	rm.CreatedDate = now
+	rm.UpdatedDate = now
+
+	err := r.coll.InsertReturning(&rm)
+	if err != nil {
+		return domain.Room{}, err
+	}
+
+	o = r.mapModelToDomain(rm)
+	return o, nil
+}
+func (r roomRepository) Update(o domain.Room) (domain.Room, error) {
+	rm := r.mapDomainToModel(o)
+	rm.UpdatedDate = time.Now()
+
+	err := r.coll.Find(db.Cond{"id": o.Id, "deleted_date": nil}).Update(&rm)
+	if err != db.ErrExpectingNonNilModel {
+		return domain.Room{}, err
+	}
+	o = r.mapModelToDomain(rm)
+	return o, nil
+}
+func (r roomRepository) Delete(id uint64) error {
+	return r.coll.Find(db.Cond{"id": id, "deleted_date": nil}).Update(map[string]interface{}{"deleted_date": time.Now()})
 }
 
     
