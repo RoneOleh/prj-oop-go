@@ -31,31 +31,39 @@ func (c RoomController) Save() http.HandlerFunc {
 			BadRequest(w, err)
 			return
 		}
-	
-	user := r.Context().Value(UserKey).(domain.User)
+	 	user,ok:= r.Context().Value(UserKey).(domain.User)
+		
 
-	org.UserId = user.Id
+		rm, err = c.orgService.Save(rm)
+		if err != nil {
+			log.Printf("OrganizationController.Save(c.orgService.Save): %s", err)
+			InternalServerError(w, err)
+			return
+		}
+
+    var rmDto resources.RoomDto
+    rmDto = rmDto.DomainToDto(savedRoom)
 	if err != nil {
 		log.Printf("RoomController.FindList(c.rmService.FindList): %s", err)
 		InternalServerError(w, err)
 		return
 	}
 
-	Success(w, resources.RoomDto{}.DomainToDtoCollection(orgs))
+	Success(w, resources.RoomDto{}.DomainToDtoCollection(rms))
 }
-}
+
 
 func (c RoomController) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := r.Context().Value(UserKey).(domain.User)
 		org := r.Context().Value(OrgKey).(domain.Organization)
 
-		if user.Id != org.UserId {
+		if user.Id != rm.UserId {
 			Forbidden(w, errors.New("access denied"))
 			return
 		}
 
-		newRoom, err := requests.Bind(r, requests.OrganizationRequest{}, domain.Room{})
+		newRoom, err := requests.Bind(r, requests.RoomRequest{}, domain.Room{})
 		if err != nil {
 			log.Printf("RoomController.Save(requests.Bind): %s", err)
 			BadRequest(w, err)

@@ -8,8 +8,8 @@ import (
 )
 
 type organizationService struct {
-	orgRepo database.OrganizationRepository
-	roomRepo database.RoomsRepository
+	orgRepo  database.OrganizationRepository
+	roomRepo database.RoomRepository
 }
 
 type OrganizationService interface {
@@ -21,10 +21,10 @@ type OrganizationService interface {
 }
 
 func NewOrganizationService(or database.OrganizationRepository,
-	rr database.RoomsRepository) OrganizationService {
+	rr database.RoomRepository) OrganizationService {
 	return organizationService{
-		orgRepo: or,
-		roomRepo:rr,
+		orgRepo:  or,
+		roomRepo: rr,
 	}
 }
 
@@ -54,10 +54,10 @@ func (s organizationService) Find(id uint64) (interface{}, error) {
 		log.Printf("organizationService.Find(s.orgRepo.Find): %s", err)
 		return nil, err
 	}
-   org.Rooms,err = s.roomRepo.FindByOrgId(org.Id)
-	if err != nil{
-		log.Printf("organizationService.Find(s.roomRepo.FindByOrg): %s",err)
-	return nil,err
+	org.Rooms, err = s.roomRepo.FindByOrgId(org.Id)
+	if err != nil {
+		log.Printf("organizationService.Find(s.roomRepo.FindByOrg): %s", err)
+		return nil, err
 	}
 
 	return org, nil
