@@ -41,12 +41,18 @@ func Router(cont container.Container) http.Handler {
 
 		apiRouter.Route("/v1", func(apiRouter chi.Router) {
 			// Public routes
+			  RoomRouter(
+        apiRouter,
+        cont.RoomController,
+        cont.RoomService,
+        cont.OrganizationService,
+    )
 			apiRouter.Group(func(apiRouter chi.Router) {
 				apiRouter.Route("/auth", func(apiRouter chi.Router) {
 					AuthRouter(apiRouter, cont.AuthController, cont.AuthMw)
 				})
 			})
-
+          
 			// Protected routes
 			apiRouter.Group(func(apiRouter chi.Router) {
 				apiRouter.Use(cont.AuthMw)
