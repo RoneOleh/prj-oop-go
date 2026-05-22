@@ -4,9 +4,9 @@ import "time"
 
 type Room struct {
 	Id          uint64
-	UserId      uint64
+	\
 	Name        string
-	Description *string
+	Description *string,
 	City        string
 	Address     string
 	Lat         float64

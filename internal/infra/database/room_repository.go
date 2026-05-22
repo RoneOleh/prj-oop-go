@@ -24,6 +24,7 @@ type RoomRepository interface {
 	Save(o domain.Room) (domain.Room, error)
 	Update(o domain.Room) (domain.Room, error)
 	Delete(id uint64) error
+	Find(oId uint64) (domain.Room, error)
 }
 
 type roomRepository struct {
@@ -36,6 +37,19 @@ func NewRoomRepository(session db.Session) RoomRepository {
 		coll: session.Collection(RoomsTableName),
 		sess: session,
 	}
+}
+func (r roomRepository) Find(oId uint64) (domain.Room, error) {
+	var rm room
+
+	err := r.coll.
+		Find(db.Cond{"id": oId, "deleted_date": nil}).
+		One(&rm)
+	if err != nil {
+		return domain.Room{}, err
+	}
+
+	o := r.mapModelToDomain(rm)
+	return o, nil
 }
 
 func (r roomRepository) FindByOrgId(oId uint64) ([]domain.Room, error) {

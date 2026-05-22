@@ -14,4 +14,5 @@ func (d RoomDto) DomainToDto(rm domain.Room) RoomDto {
 		Name: rm.Name,
 		Description: rm.Description,
   }
+  
 }

@@ -14,12 +14,12 @@ type RoomService interface {
     Update(room domain.Room)(domain.Room,error)
 	Delete(id uint64) error
 	Find(id uint64) (interface{}, error) 
-	FindList(uId uint64) ([]domain.Room, error)
+
 }
 
 func NewRoomService(rm database.RoomRepository) RoomService  {
-    return roomService{
-		roomRepo:rm,
+    return roomService {
+		roomRepo: rm, 
 	}
 }
 func (s roomService)Save(room  domain.Room)(domain.Room,error){
@@ -50,15 +50,6 @@ func(s roomService) Find(id uint64) (interface{}, error) {
   
 	return rm, nil
 }
-func (s roomService) FindList(uId uint64) ([]domain.Room, error) {
-	rms, err := s.roomRepo.FindList(uId)
-	if err != nil {
-		log.Printf("roomService.FindList(s.roomRepo.FindList): %s", err)
-		return nil, err
-	}
-
-	return rms, nil
-}
 
 
 func (s roomService) Delete(id uint64) error {
@@ -67,4 +58,5 @@ func (s roomService) Delete(id uint64) error {
 		log.Printf("roomService.Delete(s.roomRepo.Delete): %s", err)
 		return err
 	}	
+	return err
 }

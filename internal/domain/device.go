@@ -17,8 +17,8 @@ type Device struct {
 type DeviceCatogory string
 
 
-const{
-	Sensor DevivceCategory = SENSOR
-	Actuator DeviceCatogoty = ACTUATOR
+const {
+	Sensor DevivceCategory = "SENSOR"
+	Actuator DeviceCatogoty = "ACTUATOR"
 	
 }

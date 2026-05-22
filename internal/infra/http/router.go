@@ -156,7 +156,7 @@ func RoomRouter(
     roomRouter.Use(opom)
 
     roomRouter.Post("/", rc.Save())
-    roomRouter.Get("/", rc.FindList())
+    //roomRouter.Get("/", rc.FindList())
 
     roomRouter.Route("/{roomId}", func(roomRouter chi.Router) {
       roomRouter.Use(rpom)

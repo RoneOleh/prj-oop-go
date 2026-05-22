@@ -89,6 +89,7 @@ func (r organizationRepository) Find(id uint64) (domain.Organization, error) {
 	return o, nil
 }
 
+
 func (r organizationRepository) Update(o domain.Organization) (domain.Organization, error) {
 	org := r.mapDomainToModel(o)
 	org.UpdatedDate = time.Now()
