@@ -10,13 +10,13 @@ import (
 const RoomsTableName = "rooms"
 
 type room struct {
-	Id          uint64     `db:"id,omitempty"`
-	UserId      uint64     `db:"user_id"`
-	Name        string     `db:"name"`
-	Description *string    `db:"description"`
-	CreatedDate time.Time  `db:"created_date"`
-	UpdatedDate time.Time  `db:"updated_date"`
-	DeletedDate *time.Time `db:"deleted_date"`
+	Id                 uint64           `db:"id,omitempty"`
+	OrganizationId     uint64           `db:"organization_id"`
+	Name               string           `db:"name"`
+	Description        *string          `db:"description"`
+	CreatedDate       time.Time         `db:"created_date"`
+	UpdatedDate       time.Time         `db:"updated_date"`
+	DeletedDate       *time.Time        `db:"deleted_date"`
 }
 
 type RoomRepository interface {
@@ -86,7 +86,7 @@ func (r roomRepository) Update(o domain.Room) (domain.Room, error) {
 	rm.UpdatedDate = time.Now()
 
 	err := r.coll.Find(db.Cond{"id": o.Id, "deleted_date": nil}).Update(&rm)
-	if err != db.ErrExpectingNonNilModel {
+	if err !=  nil {
 		return domain.Room{}, err
 	}
 	o = r.mapModelToDomain(rm)
@@ -98,25 +98,25 @@ func (r roomRepository) Delete(id uint64) error {
 
 func (r roomRepository) mapDomainToModel(rm domain.Room) room {
 	return room{
-		Id:          rm.Id,
-		UserId:      rm.UserId,
-		Name:        rm.Name,
-		Description: rm.Description,
-		CreatedDate: rm.CreatedDate,
-		UpdatedDate: rm.UpdatedDate,
-		DeletedDate: rm.DeletedDate,
+		Id:                  rm.Id,
+		OrganizationId:      rm.OrganizationId,
+		Name:                rm.Name,
+		Description:         rm.Description,
+		CreatedDate:         rm.CreatedDate,
+		UpdatedDate:         rm.UpdatedDate,
+		DeletedDate:         rm.DeletedDate,
 	}
 }
 
 func (r roomRepository) mapModelToDomain(rm room) domain.Room {
 	return domain.Room{
-		Id:          rm.Id,
-		UserId:      rm.UserId,
-		Name:        rm.Name,
-		Description: rm.Description,
-		CreatedDate: rm.CreatedDate,
-		UpdatedDate: rm.UpdatedDate,
-		DeletedDate: rm.DeletedDate,
+		Id:                  rm.Id,
+		OrganizationId:      rm.OrganizationId,
+		Name:                rm.Name,
+		Description:         rm.Description,
+		CreatedDate:         rm.CreatedDate,
+		UpdatedDate:         rm.UpdatedDate,
+		DeletedDate:         rm.DeletedDate,
 	}
 }
 
