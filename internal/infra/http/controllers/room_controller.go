@@ -45,7 +45,7 @@ func (c RoomController) Save() http.HandlerFunc {
 		}
 		Success(w, resources.RoomDto{}.DomainToDto(rm))
 	}
-}
+
 
     var rmDto resources.RoomDto
     rmDto = rmDto.DomainToDto(savedRoom)
@@ -57,7 +57,7 @@ func (c RoomController) Save() http.HandlerFunc {
 
 	Success(w, resources.RoomDto{}.DomainToDtoCollection(rms))
   }
-}
+
 
 
 
@@ -75,7 +75,7 @@ func (c RoomController) Find() http.HandlerFunc {
 
      Success(w, resources.RoomDto{}.DomainToDto(room))
 	}
-}
+ }
 
 
 
