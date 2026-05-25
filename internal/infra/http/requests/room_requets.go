@@ -3,7 +3,7 @@ package requests
 import "github.com/BohdanBoriak/boilerplate-go-back/internal/domain"
 
 type RoomRequest struct {
-	Name        string  `json:"name"` validate:"required"`
+	Name        string  `json:"name"`
 	Description *string `json:"description"`
 }
 
