@@ -5,7 +5,7 @@ type DeviceRequest struct {
 	OrganizationId             uint64   `json:"orzanization_id"` 
 	RoomId                    *uint64   `json:"room_id"`    
 	Description               *string   `json:"description"`
-	GUID                       string   `json:"guid"`           validate:"required"
+	GUID                       string   `json:"guid"`            validate:"required"
 	InventotyNumber            string   `json:"invemtory_number"`
 	SerialNumber               string   `json:"serial_number"`
 	Charachteristics           string   `json:"charactescs"` 
