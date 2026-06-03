@@ -11,23 +11,29 @@ import (
 	"github.com/BohdanBoriak/boilerplate-go-back/internal/infra/http/resources"
 )
 
-type RoomController struct {
-	roomService app.RoomService
+type DeviceController struct {
+	deviceService app.DeviceService
+}
+type DeviceController interface {
+	deviceService app.DeviceService
+	deviceService app.DeviceService
+}
 }
 
-func NewRoomController(rs app.RoomService) RoomController {
-	return RoomController{
-		roomService: rs,
+
+func NewDeviceController(rs app.DeviceService) domain.Device {
+	return DeviceController{
+		deviceService: rs,
 	}
 }
 
-func (c RoomController) Save() http.HandlerFunc {
+func (c DeviceController) Save() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rm, err := requests.Bind(r,
-			requests.RoomRequest{},
-			domain.Room{} )
+			requests.DeviceRequest{},
+			domain.Device{} )
 		if err != nil {
-			log.Printf("RoomController.Save(requests.Bind): %s", err)
+			log.Printf("DeviceController.Save(requests.Bind): %s", err)
 			BadRequest(w, err)
 			return
 		}
@@ -35,12 +41,12 @@ func (c RoomController) Save() http.HandlerFunc {
 		
 	 	org := r.Context().Value(OrgKey).(domain.Organization)
 
-		rm.OrganizationId = org.Id
+		dev.OrganizationId = org.Id
 		
 
-		rm, err = c.roomService.Save(rm)
+		dev, err = c.deviceService.Save(dev)
 		if err != nil {
-			log.Printf("OrganizationController.Save(c.orgService.Save): %s", err)
+			log.Printf("DeviceController.Save(c.deviceService.Save): %s", err)
 			InternalServerError(w, err)
 			return
 		}
@@ -53,18 +59,18 @@ func (c RoomController) Save() http.HandlerFunc {
 
 
 
-func (c RoomController) Find() http.HandlerFunc {
+func (c DeviceController) Find() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := r.Context().Value(UserKey).(domain.User)
 		org := r.Context().Value(OrgKey).(domain.Organization)
-		room := r.Context().Value(RoomKey).(domain.Room)
+		dev:= r.Context().Value(DeviceKey).(domain.Device)
 
 		if user.Id != org.UserId {
 			Forbidden(w, errors.New("access denied"))
 			return
 		}
 
-     Success(w, resources.RoomDto{}.DomainToDto(room))
+     Success(w, resources.DeviceDto{}.DomainToDto(device))
 	}
  }
 
@@ -75,7 +81,7 @@ func (c RoomController) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := r.Context().Value(UserKey).(domain.User)
 		org := r.Context().Value(OrgKey).(domain.Organization)
-		room:= r.Context().Value(RoomKey).(domain.Room)
+		dev:= r.Context().Value(DeviceKey).(domain.Device)
 
 		if user.Id != org.UserId {
 			Forbidden(w, errors.New("access denied"))
@@ -86,24 +92,29 @@ func (c RoomController) Update() http.HandlerFunc {
 			return
 		}
 
-		newRoom, err := requests.Bind(r, requests.RoomRequest{}, domain.Room{})
+		newDev,err := requests.Bind(r, requests.DeviceRequest{}, domain.Device{})
 		if err != nil {
 			log.Printf("RoomController.Save(requests.Bind): %s", err)
 			BadRequest(w, err)
 			return
 		}
 
-		room.Name = newRoom.Name
-		room.Description = newRoom.Description
+		dev.RoomId = newDev.RoomId
+	    dev.GUID= newDev.GUID
+        dev.InventotyNumber= newDev.InventotyNumber
+		dev.SerialNumber= newDev.SerialNumber
+		dev.Category = newDev.Category
+	    dev.Units = newDev.Units
+        dev.Power = newDev.Power
 
-		room, err = c.roomService.Update(room)
+		room, err = c.roomService.Update(dev)
 		if err != nil {
-			log.Printf("RoomController.Update(c.rmService.Update): %s", err)
+			log.Printf("DeviceController.Update(c.deviceService.Update): %s", err)
 			BadRequest(w, err)
 			return
 		}
 
-		Success(w, resources.RoomDto{}.DomainToDto(room))
+		Success(w, resources.DeviceDto{}.DomainToDto(dev))
 	}
 }
 
