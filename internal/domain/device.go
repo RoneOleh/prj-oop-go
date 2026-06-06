@@ -2,6 +2,7 @@ package domain
 
 import "time"
 
+
 type Device struct {
 	Id               uint64
 	OrganizationId   uint64

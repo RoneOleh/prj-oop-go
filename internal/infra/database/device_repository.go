@@ -10,11 +10,11 @@ import (
 const DevicesTableName = "devices"
 
 type device  struct {
-	Id               uint64              `db:"id,omitempty"`
+	Id               uint64               `db:"id,omitempty"`
 	OrganizationId   uint64               `db:"organization_id"`
-	RoomId           *uint64             `db:"room_id"`
-	GUID             string              `db:"guid"`
-	InventotyNumber  string              `db:"inventoty_numder"`
+	RoomId           *uint64              `db:"room_id"`
+	GUID             string               `db:"guid"`
+	InventotyNumber  string               `db:"inventoty_numder"`
 	SerialNumber     string              `db:"serial_numder"`
 	Charachteristics string              `db:"charachteristics"` 
 	Category         domain.DeviceCategory     `db:"category"` 

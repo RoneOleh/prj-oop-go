@@ -19,6 +19,8 @@ var (
 	OrgKey  = CtxKey{Name: "organization"}
 	SessKey = CtxKey{Name: "sess"}
 	RoomKey  = CtxKey{Name: "room"}
+	DeviceKey  = CtxKey{Name: "device"}
+	
 )
 
 func Ok(w http.ResponseWriter) {

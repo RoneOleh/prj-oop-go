@@ -79,7 +79,7 @@ func (c RoomController) Update() http.HandlerFunc {
 
 		newRoom, err := requests.Bind(r, requests.RoomRequest{}, domain.Room{})
 		if err != nil {
-			log.Printf("RoomController.Save(requests.Bind): %s", err)
+			log.Printf("RoomController.Update(requests.Bind): %s", err)
 			BadRequest(w, err)
 			return
 		}
@@ -97,27 +97,31 @@ func (c RoomController) Update() http.HandlerFunc {
 
 		Success(w, resources.RoomDto{}.DomainToDto(room))
 	}
-	
+}
+
 	func (c RoomController) Delete() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		user := r.Context().Value(UserKey).(domain.User)
-		org := r.Context().Value(OrgKey).(domain.Organization)
-		room:= r.Context().Value(RoomKey).(domain.Room)
+      return func(w http.ResponseWriter, r *http.Request) {
+      user := r.Context().Value(UserKey).(domain.User)
+      org := r.Context().Value(OrgKey).(domain.Organization)
+      room:= r.Context().Value(RoomKey).(domain.Room)
+  
 
-		if user.Id != org.UserId {
-			Forbidden(w, errors.New("access denied"))
-			return
-		}
-	
+    if user.Id != org.UserId {
+      Forbidden(w, errors.New("access denied"))
+      return
+    }
+	if org.Id != room.OrganizationId {
+    Forbidden(w, errors.New("access denied"))
+    return
 
+}
 
-		err := c.orgService.Delete(org.Id)
-			if err != nil {
-			log.Printf("OrganizationController.Delete(c.orgService.Delete): %s", err)
-			InternalServerError(w, err)
-			return
-		}
+     err := c.roomService.Delete(room.Id)
+      if err != nil {
+      InternalServerError(w, err)
+      return
+    }
 
-		noContent(w)
-	}
+    noContent(w)
+  }
 }

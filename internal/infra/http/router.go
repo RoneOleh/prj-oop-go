@@ -170,25 +170,26 @@ func RoomRouter(
 
 func DeviceRouter(
   r chi.Router,
-  rc controllers.RoomController,
-  rs app.RoomService,
+  dc controllers.DeviceController,
   os app.OrganizationService,
+  ds app.DeviceService,
+
 ) {
   opom := middlewares.PathObject("orgId", controllers.OrgKey, os)
-  rpom := middlewares.PathObject("roomId", controllers.RoomKey, rs)
+  dpom := middlewares.PathObject("deviceId", controllers.DeviceKey, ds)
 
-  r.Route("/organizations/{orgId}/rooms", func(roomRouter chi.Router) {
-    roomRouter.Use(opom)
+  r.Route("/organizations/{orgId}/devices", func(deviceRouter chi.Router) {
+    deviceRouter.Use(opom)
 
-    roomRouter.Post("/", rc.Save())
+    deviceRouter.Post("/", dc.Save())
     //roomRouter.Get("/", rc.FindList())
 
-    roomRouter.Route("/{roomId}", func(roomRouter chi.Router) {
-      roomRouter.Use(rpom)
+    deviceRouter.Route("/devicesId", func(deviceRouter chi.Router) {
+      deviceRouter.Use(dpom)
 
-      roomRouter.Get("/", rc.Find())
-      roomRouter.Put("/", rc.Update())
-      roomRouter.Delete("/", rc.Delete())
+      deviceRouter.Get("/", dc.Find())
+      deviceRouter.Put("/", dc.Update())
+      deviceRouter.Delete("/",dc.Delete())
     })
   })
 }
