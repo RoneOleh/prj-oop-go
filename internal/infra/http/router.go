@@ -168,27 +168,27 @@ func RoomRouter(
   })
 }
 
-// func DeviceRouter(
-//   r chi.Router,
-//   rc controllers.RoomController,
-//   rs app.RoomService,
-//   os app.OrganizationService,
-// ) {
-//   opom := middlewares.PathObject("orgId", controllers.OrgKey, os)
-//   rpom := middlewares.PathObject("roomId", controllers.RoomKey, rs)
+func DeviceRouter(
+  r chi.Router,
+  rc controllers.RoomController,
+  rs app.RoomService,
+  os app.OrganizationService,
+) {
+  opom := middlewares.PathObject("orgId", controllers.OrgKey, os)
+  rpom := middlewares.PathObject("roomId", controllers.RoomKey, rs)
 
-//   r.Route("/organizations/{orgId}/rooms", func(roomRouter chi.Router) {
-//     roomRouter.Use(opom)
+  r.Route("/organizations/{orgId}/rooms", func(roomRouter chi.Router) {
+    roomRouter.Use(opom)
 
-//     roomRouter.Post("/", rc.Save())
-//     //roomRouter.Get("/", rc.FindList())
+    roomRouter.Post("/", rc.Save())
+    //roomRouter.Get("/", rc.FindList())
 
-//     roomRouter.Route("/{roomId}", func(roomRouter chi.Router) {
-//       roomRouter.Use(rpom)
+    roomRouter.Route("/{roomId}", func(roomRouter chi.Router) {
+      roomRouter.Use(rpom)
 
-//       roomRouter.Get("/", rc.Find())
-//       roomRouter.Put("/", rc.Update())
-//       roomRouter.Delete("/", rc.Delete())
-//     })
-//   })
-// }
+      roomRouter.Get("/", rc.Find())
+      roomRouter.Put("/", rc.Update())
+      roomRouter.Delete("/", rc.Delete())
+    })
+  })
+}

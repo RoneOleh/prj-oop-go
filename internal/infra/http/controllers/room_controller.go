@@ -97,6 +97,7 @@ func (c RoomController) Update() http.HandlerFunc {
 
 		Success(w, resources.RoomDto{}.DomainToDto(room))
 	}
+	
 	func (c RoomController) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := r.Context().Value(UserKey).(domain.User)

@@ -9,21 +9,23 @@ type DeviceRequest struct {
 	GUID             string  `json:"guid"     validate:"required"`
 	InventotyNumber  string  `json:"invemtory_number"`
 	SerialNumber     string  `json:"serial_number"`
-	Charachteristics string  `json:"charactescs"`
+	Charachteristics string  `json:"charachteriscs"`
+	Category         string  `json:"category"`
 	Units            string  `json:"units"`
 	Power            float64 `json:"power"`
 }
 
-func (r DeviceRequest) ToDomainModel() (interface{}, error) {
+func (d DeviceRequest) ToDomainModel() (interface{}, error) {
 	return domain.Device{
-		OrganizationId:   r.OrganizationId,
-		RoomId:           r.RoomId,
-		// Description:      r.Description,
-		GUID:             r.GUID,
-		InventotyNumber:  r.InventotyNumber,
-		SerialNumber:     r.SerialNumber,
-		Charachteristics: r.Charachteristics,
-		Units:            r.Units,
-		Power:            r.Power,
+		OrganizationId:   d.OrganizationId,
+		RoomId:           d.RoomId,
+		// Description:   d  r.Description,
+		GUID:             d.GUID,
+		InventotyNumber:  d.InventotyNumber,
+		SerialNumber:     d.SerialNumber,
+		Charachteristics: d.Charachteristics,
+		Category:         domain.DeviceCategory(d.Category),
+		Units:            d.Units,
+		Power:            d.Power,
 	}, nil
 }
