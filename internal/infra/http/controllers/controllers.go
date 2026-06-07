@@ -20,6 +20,7 @@ var (
 	SessKey = CtxKey{Name: "sess"}
 	RoomKey  = CtxKey{Name: "room"}
 	DeviceKey  = CtxKey{Name: "device"}
+	MeasurementKey  = CtxKey{Name: "measurement"}
 	
 )
 
@@ -32,7 +33,7 @@ func Success(w http.ResponseWriter, body interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 
-	err := json.NewEncoder(w).Encode(body)
+	err := json.NewEncoder(w).Encode(body)   
 	if err != nil {
 		log.Print(err)
 	}

@@ -1,4 +1,9 @@
 package requests
+import (
+	"time"
+
+	"github.com/BohdanBoriak/boilerplate-go-back/internal/domain"
+)
 
 type MeasurementRequest struct {
 	Id                   uint64                  `json:"id"`
@@ -11,16 +16,16 @@ type MeasurementRequest struct {
 	DeletedDate          *time.Time              `json:"deleted_date"` 
 }
 
-func (m MeasurementRequest) ToDomainModel() (interface{}, error) domain.Measurement{
-	return domain.Measurement{
-	Id:                m.Id ,                         
-    DeviceId:          m.DeviceId,              
-	RoomId:      	   m.RoomId,                 
-	Value:       	   m.Value,              
-	Type:       	   m.Type ,
-	CreatedDate:       m.CreatedDate,
-	UpdatedDate:       m.UpdatedDate,
-	DeletedDate:       m.DeletedDate,
+func (m MeasurementRequest) ToDomainModel() (interface{}, error) {
+	      return domain.Measurement{
+	      Id:                m.Id ,                         
+          DeviceId:          m.DeviceId,              
+	      RoomId:      	     m.RoomId,                 
+	      Value:       	     m.Value,              
+	      Type:       	     m.Type ,
+	      CreatedDate:       m.CreatedDate,
+	      UpdatedDate:       m.UpdatedDate,
+	      DeletedDate:       m.DeletedDate,
 
 	}, nil
 }

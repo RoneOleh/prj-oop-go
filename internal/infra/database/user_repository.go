@@ -22,6 +22,7 @@ type user struct {
 }
 
 type UserRepository interface {
+    //FindPaginated(page uint, limit uint) ([]domain.User, uint64, error)
 	FindByEmail(phone string) (domain.User, error)
 	FindById(id uint64) (domain.User, error)
 	Find(id uint64) (interface{}, error)
@@ -40,7 +41,23 @@ func NewUserRepository(dbSession db.Session) UserRepository {
 		coll: dbSession.Collection(UsersTableName),
 		sess: dbSession,
 	}
+
 }
+  //func (r userRepository)FindPaginated(page uint, limit uint) ([]domain.User, uint64, error){
+//	var data []user
+//
+//	paginator := r.coll.
+//	     Find(db.Cond{"deleted_date": nil}).
+//		OrderBy("-created_date").
+//		Paginate(limit)
+//
+//	  err := paginator.Page(page).All(&data)
+//	  if err != nil {
+//	 return nil, 0, err
+//	}
+}//
+to//tal
+//
 
 func (r userRepository) FindByEmail(email string) (domain.User, error) {
 	var u user

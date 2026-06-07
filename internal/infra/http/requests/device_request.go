@@ -3,13 +3,13 @@ package requests
 import "github.com/BohdanBoriak/boilerplate-go-back/internal/domain"
 
 type DeviceRequest struct {
-	OrganizationId   uint64  `json:"orzanization_id"`
+	OrganizationId   uint64  `json:"organization_id"`
 	RoomId           *uint64 `json:"room_id"`
 	// Description      *string `json:"description"`
 	GUID             string  `json:"guid"     validate:"required"`
-	InventotyNumber  string  `json:"invemtory_number"`
+	InventotyNumber  string  `json:"inventory_number"`
 	SerialNumber     string  `json:"serial_number"`
-	Charachteristics string  `json:"charachteriscs"`
+	Charachteristics string  `json:"charachteristics"`
 	Category         string  `json:"category"`
 	Units            string  `json:"units"`
 	Power            float64 `json:"power"`

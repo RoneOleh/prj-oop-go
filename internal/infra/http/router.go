@@ -193,3 +193,28 @@ func DeviceRouter(
     })
   })
 }
+func MeasurementRouter(
+  r chi.Router,
+  mc controllers.MeasurementController,
+  dc controllers.DeviceController,
+  os app.OrganizationService,
+  ds app.DeviceService,
+
+) {
+  opom := middlewares.PathObject("orgId", controllers.OrgKey, os)
+  dpom := middlewares.PathObject("deviceId", controllers.DeviceKey, ds)
+
+  r.Route("/organizations/{orgId}/devices/{deviceId}/measurement", func(measRouter chi.Router) {
+      measRouter.Use(opom)
+	  measRouter.Use(dpom)
+      measRouter.Post("/", mc.Save())
+	  measRouter.Get("/",  mc.FindByDeviceId())
+
+      measRouter.Route("/devicesId", func(measRouter chi.Router) {
+     
+      
+      measRouter.Put("/",  mc.Update())
+      measRouter.Delete("/", mc.Delete())
+    })
+  })
+}

@@ -12,119 +12,101 @@ import (
 )
 
 type MeasurementController struct {
-	measurmentService app.MeasurementService
+	measurementService app.MeasurementService
 }
 
-func NewMeasurmentController(rs app.DeviceService) DeviceController {
-	return MeasurementController {
-		measService: ms,
+func NewMeasurementController(ms app.MeasurementService) MeasurementController {
+	return MeasurementController{
+		measurementService: ms,
 	}
 }
 
 func (c MeasurementController) Save() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		dev, err := requests.Bind(r,
-			requests.DeviceRequest{},
-			domain.Device{})
+		meas, err := requests.Bind(r,
+			requests.MeasurementRequest{},
+			domain.Measurement{})
 		if err != nil {
-			log.Printf("DeviceController.Save(requests.Bind): %s", err)
+			log.Printf("MeasurementController.Save(requests.Bind): %s", err)
 			BadRequest(w, err)
 			return
 		}
 
-		org := r.Context().Value(OrgKey).(domain.Organization)
+		dev := r.Context().Value(DeviceKey).(domain.Device)
+		meas.DeviceId = dev.Id
 
-		dev.OrganizationId = org.Id
-
-		dev, err = c.deviceService.Save(dev)
+		meas, err = c.measurementService.Save(meas)
 		if err != nil {
-			log.Printf("DeviceController.Save(c.deviceService.Save): %s", err)
+			log.Printf("MeasurementController.Save(c.measurementService.Save): %s", err)
 			InternalServerError(w, err)
 			return
 		}
-		Success(w, resources.DeviceDto{}.DomainToDto(dev))
+		Success(w, resources.MeasurementDto{}.DomainToDto(meas))
 	}
-
 }
 
-func (c DeviceController) Find() http.HandlerFunc {
+func (c MeasurementController) Find() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := r.Context().Value(UserKey).(domain.User)
 		org := r.Context().Value(OrgKey).(domain.Organization)
-		dev := r.Context().Value(DeviceKey).(domain.Device)
+		meas := r.Context().Value(MeasurementKey).(domain.Measurement)
+
+		if user.Id != org.UserId {
+			Forbidden(w, errors.New("access denied"))
+			return
+		}
+		Success(w, resources.MeasurementDto{}.DomainToDto(meas))
+	}
+}
+
+func (c MeasurementController) Update() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		user := r.Context().Value(UserKey).(domain.User)
+		org := r.Context().Value(OrgKey).(domain.Organization)
+		meas := r.Context().Value(MeasurementKey).(domain.Measurement)
 
 		if user.Id != org.UserId {
 			Forbidden(w, errors.New("access denied"))
 			return
 		}
 
-        if org.Id != dev.OrganizationId {
-			Forbidden(w, errors.New("access denied"))
+		newMeas, err := requests.Bind(r, requests.MeasurementRequest{}, domain.Measurement{})
+		if err != nil {
+			log.Printf("MeasurementController.Update(requests.Bind): %s", err)
+			BadRequest(w, err)
 			return
 		}
-		Success(w, resources.DeviceDto{}.DomainToDto(dev))
+
+		meas.Value = newMeas.Value
+		meas.Type = newMeas.Type
+
+		meas, err = c.measurementService.Update(meas)
+		if err != nil {
+			log.Printf("MeasurementController.Update(c.measurementService.Update): %s", err)
+			InternalServerError(w, err)
+			return
+		}
+
+		Success(w, resources.MeasurementDto{}.DomainToDto(meas))
 	}
 }
 
-func (c DeviceController) Update() http.HandlerFunc {
+func (c MeasurementController) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := r.Context().Value(UserKey).(domain.User)
 		org := r.Context().Value(OrgKey).(domain.Organization)
-		dev := r.Context().Value(DeviceKey).(domain.Device)
+		meas := r.Context().Value(MeasurementKey).(domain.Measurement)
 
 		if user.Id != org.UserId {
 			Forbidden(w, errors.New("access denied"))
 			return
 		}
-		if org.Id != dev.OrganizationId {
-			Forbidden(w, errors.New("access denied"))
-			return
-		}
-        newDev, err := requests.Bind(r, requests.DeviceRequest{}, domain.Device{})
+		err := c.measurementService.Delete(meas.Id)
 		if err != nil {
-			log.Printf("DeviceController.Update(requests.Bind): %s", err)
-			BadRequest(w, err)
-			return
-		}
-		dev.RoomId = newDev.RoomId
-		dev.GUID = newDev.GUID
-		dev.InventotyNumber = newDev.InventotyNumber
-		dev.SerialNumber = newDev.SerialNumber
-		dev.Category = newDev.Category
-		dev.Units = newDev.Units
-		dev.Power = newDev.Power
-
-		dev, err = c.deviceService.Update(dev)
-		if err != nil {
-			log.Printf("DeviceController.Update(c.deviceService.Update): %s", err)
-			BadRequest(w, err)
-			return
-		}
-
-		Success(w, resources.DeviceDto{}.DomainToDto(dev))
-	}
-}
-func (c DeviceController) Delete() http.HandlerFunc {
-       return func(w http.ResponseWriter, r *http.Request) {
-       user := r.Context().Value(UserKey).(domain.User) 
-	   org := r.Context().Value(OrgKey).(domain.Organization)
-	   dev := r.Context().Value(DeviceKey).(domain.Device)
-
-	   if user.Id !=org.UserId {
-	   Forbidden(w,errors.New("acess denied"))
-	   return
-	  }
-      if org.Id != dev.OrganizationId {
-	   Forbidden(w,errors.New("acess denied"))
-	   return
-	  }
-      err := c.deviceService.Delete(dev.Id)
-		if err != nil {
-			log.Printf("DeviceController.Delete(c.deviceService.Delete): %s", err)
+			log.Printf("MeasurementController.Delete(c.measurementService.Delete): %s", err)
 			InternalServerError(w, err)
 			return
 		}
-     Success(w, nil)
-	 
+		noContent(w)
 	}
 }
