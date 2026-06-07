@@ -82,7 +82,7 @@ func (c EventController) FindByDevice() http.HandlerFunc {
 	}
 }
 
-func (c EventController) GetEnergyByPeriod() http.HandlerFunc {
+func (c EventController) FindByPeriod() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user := r.Context().Value(UserKey).(domain.User)
 		org := r.Context().Value(OrgKey).(domain.Organization)
@@ -99,13 +99,18 @@ func (c EventController) GetEnergyByPeriod() http.HandlerFunc {
 			roomId = &room.Id
 		}
 
-		events, err := c.eventService.GetEnergyByPeriod(roomId, org.Id, period)
-		if err != nil {
-			log.Printf("EventController.GetEnergyByPeriod(c.eventService.GetEnergyByPeriod): %s", err)
-			BadRequest(w, err)
-			return
-		}
+	energy, err := c.eventService.FindByPeriod(roomId, org.Id, period)
+	if err != nil {
+		log.Printf("EventController.GetEnergyByPeriod: %s", err)
+		BadRequest(w, err)
+		return
+	}
 
+	response := map[string]interface{}{
+		"energy_kwh": energy,
+		"period":     period,
+	}
+	Success(w, response)
 		Success(w, resources.EventDto{}.DomainToDtoCollection(events))
 	}
 }

@@ -204,11 +204,12 @@ func MeasurementRouter(
   opom := middlewares.PathObject("orgId", controllers.OrgKey, os)
   dpom := middlewares.PathObject("deviceId", controllers.DeviceKey, ds)
 
+
   r.Route("/organizations/{orgId}/devices/{deviceId}/measurement", func(measRouter chi.Router) {
       measRouter.Use(opom)
 	  measRouter.Use(dpom)
       measRouter.Post("/", mc.Save())
-	  measRouter.Get("/",  mc.FindByDeviceId())
+	  measRouter.Get("/",  mc.Find())
 
       measRouter.Route("/devicesId", func(measRouter chi.Router) {
      
@@ -217,4 +218,38 @@ func MeasurementRouter(
       measRouter.Delete("/", mc.Delete())
     })
   })
+}
+func EventRouter(
+	r chi.Router,
+	ec controllers.EventController, 
+	os app.OrganizationService,
+	ds app.DeviceService,
+) {
+	opom := middlewares.PathObject("orgId", controllers.OrgKey, os)
+	dpom := middlewares.PathObject("deviceId", controllers.DeviceKey, ds)
+	
+   r.Route("/organizations/{orgId}/devices/{deviceId}/events", func(eventRouter chi.Router) {
+		eventRouter.Use(opom)
+		eventRouter.Use(dpom)
+		eventRouter.Get("/", ec.FindByDevice())
+
+		eventRouter.Route("/{eventId}", func(eventRouter chi.Router) {
+			eventRouter.Use(opom)
+
+			eventRouter.Get("/", ec.Find())
+			eventRouter.Put("/", ec.Update())
+			eventRouter.Delete("/", ec.Delete())
+		})
+	})
+
+	r.Route("/organizations/{orgId}/events/energy", func(energyRouter chi.Router) {
+		energyRouter.Use(opom)
+		energyRouter.Get("/", ec.FindByPeriod())
+	})
+
+	r.Route("/organizations/{orgId}/rooms/{roomId}/events/energy", func(energyRouter chi.Router) {
+		energyRouter.Use(opom)
+		energyRouter.Use(dpom)
+		energyRouter.Get("/", ec.FindByPeriod())
+	})
 }
