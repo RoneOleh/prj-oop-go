@@ -62,7 +62,7 @@ func New(conf config.Configuration) Container {
 	roomService := app.NewRoomService(roomRepository)
 	deviceService := app.NewDeviceService(deviceRepository)
 	measurementService := app.NewMeasurementService(measurementRepository)
-    eventService := app.NewEventService(eventRepository)
+    eventService := app.NewEventService(eventRepository,deviceRepository)
 
 	authController := controllers.NewAuthController(authService, userService)
 	userController := controllers.NewUserController(userService, authService)
