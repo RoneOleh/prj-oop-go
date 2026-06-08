@@ -1,5 +1,5 @@
 package database
-
+/*
 import (
 	"time"
 
@@ -155,3 +155,4 @@ func (r eventRepository) mapModelToDomain(e event) domain.Event {
 		DeletedDate: e.DeletedDate,
 	}
 }
+*/

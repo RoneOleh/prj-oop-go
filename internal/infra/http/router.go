@@ -219,9 +219,9 @@ func MeasurementRouter(
     })
   })
 }
-func EventRouter(
+/*func EventRouter(
 	r chi.Router,
-	ec controllers.EventController, 
+	ec controllers.EventController,
 	os app.OrganizationService,
 	ds app.DeviceService,
 ) {
@@ -252,4 +252,4 @@ func EventRouter(
 		energyRouter.Use(dpom)
 		energyRouter.Get("/", ec.FindByPeriod())
 	})
-}
+}*/

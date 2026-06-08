@@ -1,5 +1,6 @@
 package controllers
 
+/* 
 import (
 	"errors"
 	"log"
@@ -167,3 +168,4 @@ func (c EventController) Delete() http.HandlerFunc {
 		noContent(w)
 	}
 }
+	*/
