@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS public.rooms
 (
     id              serial PRIMARY KEY,
+    organization_id integer NOT NULL, -- Можна додати REFERENCES public.organizations(id) якщо така таблиця існує
     user_id         integer NOT NULL REFERENCES public.users(id),
     name            varchar(250) NOT NULL,
     description     text,

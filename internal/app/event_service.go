@@ -153,4 +153,4 @@ func (s eventService) Delete(id uint64) error {
 	}
 	return nil
 }
-*/
+*/ 

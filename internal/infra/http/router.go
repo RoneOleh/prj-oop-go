@@ -14,13 +14,11 @@ import (
 	"github.com/BohdanBoriak/boilerplate-go-back/internal/infra/http/controllers"
 	"github.com/BohdanBoriak/boilerplate-go-back/internal/infra/http/middlewares"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/cors"
-
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 )
 
 func Router(cont container.Container) http.Handler {
-
 	router := chi.NewRouter()
 
 	router.Use(middleware.RedirectSlashes, middleware.Logger, cors.Handler(cors.Options{
@@ -33,35 +31,27 @@ func Router(cont container.Container) http.Handler {
 	}))
 
 	router.Route("/api", func(apiRouter chi.Router) {
-		// Health
 		apiRouter.Route("/ping", func(healthRouter chi.Router) {
 			healthRouter.Get("/", PingHandler())
 			healthRouter.Handle("/*", NotFoundJSON())
 		})
 
 		apiRouter.Route("/v1", func(apiRouter chi.Router) {
-			// Public routes
-			  RoomRouter(
-        apiRouter,
-        cont.RoomController,
-        cont.RoomService,
-        cont.OrganizationService,
-    )
 			apiRouter.Group(func(apiRouter chi.Router) {
 				apiRouter.Route("/auth", func(apiRouter chi.Router) {
 					AuthRouter(apiRouter, cont.AuthController, cont.AuthMw)
 				})
 			})
-          
-			// Protected routes
+
 			apiRouter.Group(func(apiRouter chi.Router) {
 				apiRouter.Use(cont.AuthMw)
 
 				UserRouter(apiRouter, cont.UserController)
-				OrganizationRouter(
-					apiRouter,
-					cont.OrganizationController,
-					cont.OrganizationService)
+				OrganizationRouter(apiRouter, cont.OrganizationController, cont.OrganizationService)
+				RoomRouter(apiRouter, cont.RoomController, cont.RoomService, cont.OrganizationService)
+				DeviceRouter(apiRouter, cont.DeviceController, cont.OrganizationService, cont.DeviceService)
+				MeasurementRouter(apiRouter, cont.MeasurementController, cont.DeviceController, cont.OrganizationService, cont.DeviceService)
+
 				apiRouter.Handle("/*", NotFoundJSON())
 			})
 		})
@@ -82,31 +72,16 @@ func Router(cont container.Container) http.Handler {
 func AuthRouter(r chi.Router, ac controllers.AuthController, amw func(http.Handler) http.Handler) {
 	r.Route("/", func(apiRouter chi.Router) {
 		apiRouter.Post("/register", ac.Register())
-		apiRouter.Post(
-			"/login",
-			ac.Login(),
-		)
-		apiRouter.With(amw).Post(
-			"/logout",
-			ac.Logout(),
-		)
+		apiRouter.Post("/login", ac.Login())
+		apiRouter.With(amw).Post("/logout", ac.Logout())
 	})
 }
 
 func UserRouter(r chi.Router, uc controllers.UserController) {
 	r.Route("/users", func(apiRouter chi.Router) {
-		apiRouter.Get(
-			"/",
-			uc.FindMe(),
-		)
-		apiRouter.Put(
-			"/",
-			uc.Update(),
-		)
-		apiRouter.Delete(
-			"/",
-			uc.Delete(),
-		)
+		apiRouter.Get("/", uc.FindMe())
+		apiRouter.Put("/", uc.Update())
+		apiRouter.Delete("/", uc.Delete())
 	})
 }
 
@@ -143,113 +118,53 @@ func PingHandler() http.HandlerFunc {
 	}
 }
 
-func RoomRouter(
-  r chi.Router,
-  rc controllers.RoomController,
-  rs app.RoomService,
-  os app.OrganizationService,
-) {
-  opom := middlewares.PathObject("orgId", controllers.OrgKey, os)
-  rpom := middlewares.PathObject("roomId", controllers.RoomKey, rs)
-
-  r.Route("/organizations/{orgId}/rooms", func(roomRouter chi.Router) {
-    roomRouter.Use(opom)
-
-    roomRouter.Post("/", rc.Save())
-    //roomRouter.Get("/", rc.FindList())
-
-    roomRouter.Route("/{roomId}", func(roomRouter chi.Router) {
-      roomRouter.Use(rpom)
-
-      roomRouter.Get("/", rc.Find())
-      roomRouter.Put("/", rc.Update())
-      roomRouter.Delete("/", rc.Delete())
-    })
-  })
-}
-
-func DeviceRouter(
-  r chi.Router,
-  dc controllers.DeviceController,
-  os app.OrganizationService,
-  ds app.DeviceService,
-
-) {
-  opom := middlewares.PathObject("orgId", controllers.OrgKey, os)
-  dpom := middlewares.PathObject("deviceId", controllers.DeviceKey, ds)
-
-  r.Route("/organizations/{orgId}/devices", func(deviceRouter chi.Router) {
-    deviceRouter.Use(opom)
-
-    deviceRouter.Post("/", dc.Save())
-    //roomRouter.Get("/", rc.FindList())
-
-    deviceRouter.Route("/devicesId", func(deviceRouter chi.Router) {
-      deviceRouter.Use(dpom)
-
-      deviceRouter.Get("/", dc.Find())
-      deviceRouter.Put("/", dc.Update())
-      deviceRouter.Delete("/",dc.Delete())
-    })
-  })
-}
-func MeasurementRouter(
-  r chi.Router,
-  mc controllers.MeasurementController,
-  dc controllers.DeviceController,
-  os app.OrganizationService,
-  ds app.DeviceService,
-
-) {
-  opom := middlewares.PathObject("orgId", controllers.OrgKey, os)
-  dpom := middlewares.PathObject("deviceId", controllers.DeviceKey, ds)
-
-
-  r.Route("/organizations/{orgId}/devices/{deviceId}/measurement", func(measRouter chi.Router) {
-      measRouter.Use(opom)
-	  measRouter.Use(dpom)
-      measRouter.Post("/", mc.Save())
-	  measRouter.Get("/",  mc.Find())
-
-      measRouter.Route("/devicesId", func(measRouter chi.Router) {
-     
-      
-      measRouter.Put("/",  mc.Update())
-      measRouter.Delete("/", mc.Delete())
-    })
-  })
-}
-/*func EventRouter(
-	r chi.Router,
-	ec controllers.EventController,
-	os app.OrganizationService,
-	ds app.DeviceService,
-) {
+func RoomRouter(r chi.Router, rc controllers.RoomController, rs app.RoomService, os app.OrganizationService) {
 	opom := middlewares.PathObject("orgId", controllers.OrgKey, os)
-	dpom := middlewares.PathObject("deviceId", controllers.DeviceKey, ds)
-	
-   r.Route("/organizations/{orgId}/devices/{deviceId}/events", func(eventRouter chi.Router) {
-		eventRouter.Use(opom)
-		eventRouter.Use(dpom)
-		eventRouter.Get("/", ec.FindByDevice())
+	rpom := middlewares.PathObject("roomId", controllers.RoomKey, rs)
 
-		eventRouter.Route("/{eventId}", func(eventRouter chi.Router) {
-			eventRouter.Use(opom)
+	r.Route("/organizations/{orgId}/rooms", func(roomRouter chi.Router) {
+		roomRouter.Use(opom)
+		roomRouter.Post("/", rc.Save())
 
-			eventRouter.Get("/", ec.Find())
-			eventRouter.Put("/", ec.Update())
-			eventRouter.Delete("/", ec.Delete())
+		roomRouter.Route("/{roomId}", func(roomRouter chi.Router) {
+			roomRouter.Use(rpom)
+			roomRouter.Get("/", rc.Find())
+			roomRouter.Put("/", rc.Update())
+			roomRouter.Delete("/", rc.Delete())
 		})
 	})
+}
 
-	r.Route("/organizations/{orgId}/events/energy", func(energyRouter chi.Router) {
-		energyRouter.Use(opom)
-		energyRouter.Get("/", ec.FindByPeriod())
-	})
+func DeviceRouter(r chi.Router, dc controllers.DeviceController, os app.OrganizationService, ds app.DeviceService) {
+	opom := middlewares.PathObject("orgId", controllers.OrgKey, os)
+	dpom := middlewares.PathObject("deviceId", controllers.DeviceKey, ds)
 
-	r.Route("/organizations/{orgId}/rooms/{roomId}/events/energy", func(energyRouter chi.Router) {
-		energyRouter.Use(opom)
-		energyRouter.Use(dpom)
-		energyRouter.Get("/", ec.FindByPeriod())
+	r.Route("/organizations/{orgId}/devices", func(deviceRouter chi.Router) {
+		deviceRouter.Use(opom)
+		deviceRouter.Post("/", dc.Save())
+
+		deviceRouter.Route("/{deviceId}", func(deviceRouter chi.Router) {
+			deviceRouter.Use(dpom)
+			deviceRouter.Get("/", dc.Find())
+			deviceRouter.Put("/", dc.Update())
+			deviceRouter.Delete("/", dc.Delete())
+		})
 	})
-}*/
+}
+
+func MeasurementRouter(r chi.Router, mc controllers.MeasurementController, dc controllers.DeviceController, os app.OrganizationService, ds app.DeviceService) {
+	opom := middlewares.PathObject("orgId", controllers.OrgKey, os)
+	dpom := middlewares.PathObject("deviceId", controllers.DeviceKey, ds)
+
+	r.Route("/organizations/{orgId}/devices/{deviceId}/measurement", func(measRouter chi.Router) {
+		measRouter.Use(opom)
+		measRouter.Use(dpom)
+		measRouter.Post("/", mc.Save())
+		measRouter.Get("/", mc.Find())
+
+		measRouter.Route("/{measurementId}", func(measRouter chi.Router) {
+			measRouter.Put("/", mc.Update())
+			measRouter.Delete("/", mc.Delete())
+		})
+	})
+}
